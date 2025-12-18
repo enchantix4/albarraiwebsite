@@ -223,7 +223,12 @@ export default function LinkFolderModal({
       const data = await response.json()
       
       if (!response.ok) {
-        setError(data.error || 'Failed to load folder contents')
+        // Check if it's a production environment error
+        if (response.status === 403 && data.message) {
+          setError('Folder browsing is only available in local development. This feature requires access to your local file system.')
+        } else {
+          setError(data.error || 'Failed to load folder contents')
+        }
         setFolderItems([])
       } else {
         setFolderItems(data.items || [])
@@ -247,9 +252,16 @@ export default function LinkFolderModal({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filePath: item.path }),
-        }).catch(() => {
-          // If API fails, show the file path
-          alert(`File: ${item.path}\n\nTo open this file, please use Finder.`)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (!data.success && data.error) {
+            // Show user-friendly message in production
+            console.log('File opening not available:', data.message || data.error)
+          }
+        })
+        .catch(() => {
+          // Silently fail - file opening is a local-only feature
         })
       }
     }
@@ -502,9 +514,12 @@ export default function LinkFolderModal({
                             alt={item.name}
                             className="w-full h-auto max-h-[400px] object-contain"
                             onError={(e) => {
-                              // Hide image on error
+                              // Hide image on error (e.g., in production where file access isn't available)
                               const target = e.target as HTMLImageElement
-                              target.style.display = 'none'
+                              const parent = target.parentElement
+                              if (parent) {
+                                parent.innerHTML = '<p class="p-2 text-xs text-center opacity-70">Image preview not available in production</p>'
+                              }
                             }}
                           />
                         </div>

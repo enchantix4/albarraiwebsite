@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { exec } from 'child_process'
 
 export async function POST(request: NextRequest) {
+  // Only allow folder opening in development/local environment
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ 
+      error: 'Folder opening is only available in local development environment',
+      message: 'This feature requires local file system access'
+    }, { status: 403 })
+  }
+
   const { folderPath } = await request.json()
   
   if (!folderPath?.startsWith('/Users/')) {
