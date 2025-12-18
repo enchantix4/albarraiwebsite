@@ -8,9 +8,16 @@ import SignUpModal from './components/SignUpModal'
 import ResumeModal from './components/ResumeModal'
 import MusicModal from './components/MusicModal'
 import StoreModal from './components/StoreModal'
+import LinkFolderModal from './components/LinkFolderModal'
 import SocialLinks from './components/SocialLinks'
 import { useTitles } from './hooks/useTitles'
 import { useColors } from './hooks/useColors'
+
+interface LinkFolderContent {
+  type: 'url' | 'folder'
+  url?: string
+  folderPath?: string
+}
 
 export default function Home() {
   const { titles } = useTitles()
@@ -18,6 +25,7 @@ export default function Home() {
   const [openWindows, setOpenWindows] = useState<Set<string>>(new Set())
   const [windowZIndex, setWindowZIndex] = useState<{ [key: string]: number }>({})
   const [maxZIndex, setMaxZIndex] = useState(50)
+  const [linkFolderModals, setLinkFolderModals] = useState<Map<string, LinkFolderContent>>(new Map())
 
   const handleSectionClick = (section: string) => {
     setOpenWindows(prev => {
@@ -47,6 +55,29 @@ export default function Home() {
     setWindowZIndex(prev => {
       const newObj = { ...prev }
       delete newObj[section]
+      return newObj
+    })
+  }
+
+  const openLinkFolder = (content: LinkFolderContent) => {
+    const modalId = `link-folder-${content.type}-${content.url || content.folderPath || Date.now()}`
+    setLinkFolderModals(prev => {
+      const newMap = new Map(prev)
+      newMap.set(modalId, content)
+      return newMap
+    })
+    bringToFront(modalId)
+  }
+
+  const closeLinkFolder = (modalId: string) => {
+    setLinkFolderModals(prev => {
+      const newMap = new Map(prev)
+      newMap.delete(modalId)
+      return newMap
+    })
+    setWindowZIndex(prev => {
+      const newObj = { ...prev }
+      delete newObj[modalId]
       return newObj
     })
   }
@@ -97,6 +128,7 @@ export default function Home() {
           onFocus={() => bringToFront('resume')}
           title={titles.windowTitles.resume}
           colors={colors}
+          onOpenLink={openLinkFolder}
         />
       )}
       {openWindows.has('music') && (
@@ -119,6 +151,20 @@ export default function Home() {
           colors={colors}
         />
       )}
+
+      {/* Link/Folder Modals */}
+      {Array.from(linkFolderModals.entries()).map(([modalId, content]) => (
+        <LinkFolderModal
+          key={modalId}
+          isOpen={true}
+          onClose={() => closeLinkFolder(modalId)}
+          zIndex={windowZIndex[modalId] || 50}
+          onFocus={() => bringToFront(modalId)}
+          content={content}
+          colors={colors}
+          onOpenItem={openLinkFolder}
+        />
+      ))}
 
       <SocialLinks />
     </main>

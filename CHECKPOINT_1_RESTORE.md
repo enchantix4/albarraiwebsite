@@ -34,3 +34,4 @@ cp .checkpoints/HeroImage.checkpoint-1.tsx app/components/HeroImage.tsx
 
 
 
+

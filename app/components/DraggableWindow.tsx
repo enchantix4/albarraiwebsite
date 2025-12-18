@@ -38,11 +38,35 @@ export default function DraggableWindow({
   const { updateTitle } = useTitles()
   const { colors: defaultColors, updateColor } = useColors()
   const colors = colorsProp || defaultColors
-  const [position, setPosition] = useState(initialPosition || { x: 100, y: 100 })
+  
+  // Initialize position from localStorage first, then fall back to initialPosition
+  const getInitialPosition = () => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`window-${id}-position`)
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          return parsed
+        } catch (e) {
+          console.error('Failed to load window position', e)
+        }
+      }
+    }
+    return initialPosition || { x: 100, y: 100 }
+  }
+  
+  const [position, setPosition] = useState(getInitialPosition)
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const [editMode, setEditMode] = useState(false)
   const windowRef = useRef<HTMLDivElement>(null)
+  const hasLoadedPosition = useRef(false)
+  const positionRef = useRef(position)
+  
+  // Keep ref in sync with position state
+  useEffect(() => {
+    positionRef.current = position
+  }, [position])
   
   // Check edit mode from localStorage
   useEffect(() => {
@@ -55,20 +79,30 @@ export default function DraggableWindow({
     return () => clearInterval(interval)
   }, [])
 
-  // Load saved position from localStorage
+  // Load saved position from localStorage on mount and when window opens
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !hasLoadedPosition.current) {
       const saved = localStorage.getItem(`window-${id}-position`)
       if (saved) {
         try {
           const parsed = JSON.parse(saved)
           setPosition(parsed)
+          hasLoadedPosition.current = true
         } catch (e) {
           console.error('Failed to load window position', e)
         }
+      } else {
+        hasLoadedPosition.current = true
       }
     }
   }, [isOpen, id])
+  
+  // Reset the flag when window closes
+  useEffect(() => {
+    if (!isOpen) {
+      hasLoadedPosition.current = false
+    }
+  }, [isOpen])
 
   // Save position to localStorage
   const savePosition = (pos: { x: number; y: number }) => {
@@ -117,6 +151,10 @@ export default function DraggableWindow({
   }
 
   const handleMouseUp = () => {
+    if (isDragging) {
+      // Ensure position is saved when drag ends (use ref to get latest position)
+      savePosition(positionRef.current)
+    }
     setIsDragging(false)
   }
 

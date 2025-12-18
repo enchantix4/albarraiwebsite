@@ -60,3 +60,4 @@ Copy `.checkpoints/HeroImage.checkpoint-3.tsx` to `app/components/HeroImage.tsx`
 
 
 
+
