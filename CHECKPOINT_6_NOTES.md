@@ -15,7 +15,7 @@ Current implementation state saved as checkpoint 6.
 
 ### 2. Portfolio Folders Created
 - **LELA Portfolio**: 11 JPG images in `public/images/portfolio/lela/`
-- **JOYnt Campaign Portfolio**: 52 PNG images in `public/images/portfolio/joynt/`
+- **JOYnt Campaign Portfolio**: 43 PNG images in `public/images/portfolio/joynt/` (9 images removed: 8-16.png)
 - All images are now part of the repository and deployable
 
 ### 3. Enhanced API Routes
@@ -74,10 +74,9 @@ Current implementation state saved as checkpoint 6.
 - Works seamlessly on Vercel and other hosting platforms
 
 ## Image Statistics
-- **Total Images**: 63 files
-- **Total Size**: 308MB
+- **Total Images**: 54 files (9 images removed from JOYnt)
 - **LELA Images**: 11 JPG files
-- **JOYnt Images**: 52 PNG files
+- **JOYnt Images**: 43 PNG files (removed: 8.png, 9.png, 10.png, 11.png, 12.png, 13.png, 14.png, 15.png, 16.png)
 - **Location**: `public/images/portfolio/`
 
 ## Next Steps / Future Enhancements
