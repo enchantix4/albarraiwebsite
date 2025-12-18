@@ -51,9 +51,11 @@ export default function LinkFolderModal({
   const [canGoForward, setCanGoForward] = useState(false)
   const windowRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const resizeHandlesRef = useRef<HTMLDivElement>(null)
   const [isResizing, setIsResizing] = useState(false)
   const [resizeHandle, setResizeHandle] = useState<'se' | 'sw' | 'ne' | 'nw' | 'e' | 'w' | 's' | 'n' | null>(null)
   const resizeStartRef = useRef({ x: 0, y: 0, width: 0, height: 0, left: 0, top: 0 })
+  const [windowRect, setWindowRect] = useState<DOMRect | null>(null)
 
   useEffect(() => {
     if (isOpen && content.type === 'folder' && content.folderPath) {
@@ -113,21 +115,66 @@ export default function LinkFolderModal({
         }
       }
       if (resizeHandle.includes('s')) {
-        newHeight = Math.max(300, Math.min(window.innerHeight - newTop, resizeStartRef.current.height + deltaY))
+        // Resize from bottom - increase/decrease height
+        const maxHeight = window.innerHeight - newTop
+        newHeight = Math.max(300, Math.min(maxHeight, resizeStartRef.current.height + deltaY))
       }
       if (resizeHandle.includes('n')) {
+        // Resize from top - adjust both height and position
         const heightChange = resizeStartRef.current.height - deltaY
-        if (heightChange >= 300) {
+        if (heightChange >= 300 && newTop + deltaY >= 0) {
           newHeight = heightChange
           newTop = resizeStartRef.current.top + deltaY
         }
       }
 
       // Apply new size and position
-      windowRef.current.style.width = `${newWidth}px`
-      windowRef.current.style.height = `${newHeight}px`
-      windowRef.current.style.left = `${newLeft}px`
-      windowRef.current.style.top = `${newTop}px`
+      if (windowRef.current) {
+        // Force height to be a fixed pixel value (not 'auto')
+        windowRef.current.style.width = `${newWidth}px`
+        windowRef.current.style.height = `${newHeight}px`
+        windowRef.current.style.left = `${newLeft}px`
+        windowRef.current.style.top = `${newTop}px`
+        // Remove maxHeight constraint that might interfere
+        windowRef.current.style.maxHeight = 'none'
+        
+        // Find and update the inner content containers
+        // The structure is: motion.div > div.relative (border) > div.overflow-y-auto (content area)
+        const borderContainer = windowRef.current.querySelector('.relative') as HTMLElement
+        const contentArea = windowRef.current.querySelector('.overflow-y-auto.relative') as HTMLElement
+        
+        if (borderContainer) {
+          // Update border container height
+          borderContainer.style.height = `${newHeight}px`
+        }
+        
+        if (contentArea) {
+          // Calculate content height (subtract header height)
+          const headerHeight = windowRef.current.querySelector('[data-drag-handle]')?.getBoundingClientRect().height || 35
+          const contentHeight = newHeight - headerHeight
+          contentArea.style.height = `${contentHeight}px`
+          contentArea.style.maxHeight = `${contentHeight}px`
+          contentArea.style.overflow = 'auto'
+        }
+        
+        // Update the iframe height if it exists (for URL previews)
+        const iframe = windowRef.current.querySelector('iframe') as HTMLIFrameElement
+        if (iframe && contentArea) {
+          // Calculate iframe height (content height minus navigation bar)
+          const navBar = windowRef.current.querySelector('[style*="background: rgb(158, 255, 31)"]') as HTMLElement
+          const navBarHeight = navBar?.getBoundingClientRect().height || 47
+          const iframeHeight = contentArea.getBoundingClientRect().height - navBarHeight
+          iframe.style.height = `${iframeHeight}px`
+        }
+        
+        // Update resize handles position
+        if (resizeHandlesRef.current) {
+          resizeHandlesRef.current.style.left = `${newLeft}px`
+          resizeHandlesRef.current.style.top = `${newTop}px`
+          resizeHandlesRef.current.style.width = `${newWidth}px`
+          resizeHandlesRef.current.style.height = `${newHeight}px`
+        }
+      }
     }
 
     const handleMouseUp = () => {
@@ -208,26 +255,54 @@ export default function LinkFolderModal({
     }
   }
 
-  // Get window element after mount by finding parent fixed positioned element
+  // Get window element after mount by finding the motion.div container
   useEffect(() => {
     if (isOpen && contentRef.current) {
       const findWindowElement = () => {
+        // Find the window by looking for the motion.div that contains our content
         let element: HTMLElement | null = contentRef.current
-        // Traverse up to find the fixed positioned window container
+        // Traverse up to find the fixed positioned window container (motion.div)
         while (element && element.parentElement) {
           element = element.parentElement
           const style = window.getComputedStyle(element)
+          // Look for fixed position - this is the motion.div from DraggableWindow
           if (style.position === 'fixed') {
             windowRef.current = element as HTMLDivElement
             break
           }
         }
       }
-      setTimeout(findWindowElement, 100)
-      const interval = setInterval(findWindowElement, 100)
-      return () => clearInterval(interval)
+      // Try multiple times to ensure we find it after React renders
+      const timeout1 = setTimeout(findWindowElement, 100)
+      const timeout2 = setTimeout(findWindowElement, 300)
+      const interval = setInterval(findWindowElement, 500)
+      return () => {
+        clearTimeout(timeout1)
+        clearTimeout(timeout2)
+        clearInterval(interval)
+      }
     }
-  }, [isOpen])
+  }, [isOpen, content])
+
+  // Update resize handles position when window moves or resizes
+  useEffect(() => {
+    if (!isOpen) return
+
+    const updateHandlesPosition = () => {
+      if (windowRef.current && resizeHandlesRef.current) {
+        const rect = windowRef.current.getBoundingClientRect()
+        resizeHandlesRef.current.style.left = `${rect.left}px`
+        resizeHandlesRef.current.style.top = `${rect.top}px`
+        resizeHandlesRef.current.style.width = `${rect.width}px`
+        resizeHandlesRef.current.style.height = `${rect.height}px`
+      }
+    }
+
+    // Update immediately and then periodically
+    updateHandlesPosition()
+    const interval = setInterval(updateHandlesPosition, 100)
+    return () => clearInterval(interval)
+  }, [isOpen, isResizing])
 
   return (
     <DraggableWindow
@@ -247,7 +322,7 @@ export default function LinkFolderModal({
       onFocus={onFocus}
       colors={colors}
     >
-      <div ref={contentRef} className="space-y-4 relative" data-link-folder-content style={{ width: '100%', height: '100%' }}>
+      <div ref={contentRef} className="space-y-4 relative" data-link-folder-content style={{ width: '100%', height: '100%', minHeight: '100%' }}>
         {content.type === 'url' && content.url && (
           <div className="h-full flex flex-col" style={{ background: colors.window.background }}>
             {/* Browser Navigation Bar */}
@@ -443,52 +518,71 @@ export default function LinkFolderModal({
         )}
       </div>
       
-      {/* Resize Handles */}
+      {/* Resize Handles - positioned relative to window container */}
       {isOpen && (
-        <>
+        <div 
+          ref={resizeHandlesRef}
+          className="fixed pointer-events-none"
+          style={{
+            left: windowRef.current ? (windowRef.current.getBoundingClientRect().left + 'px') : '0px',
+            top: windowRef.current ? (windowRef.current.getBoundingClientRect().top + 'px') : '0px',
+            width: windowRef.current ? (windowRef.current.getBoundingClientRect().width + 'px') : '0px',
+            height: windowRef.current ? (windowRef.current.getBoundingClientRect().height + 'px') : '0px',
+            zIndex: (zIndex || 50) + 10,
+            pointerEvents: 'none'
+          }}
+        >
           {/* Corner handles */}
           <div
             onMouseDown={(e) => handleResizeStart(e, 'se')}
-            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50"
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize pointer-events-auto"
             style={{ background: 'transparent' }}
+            title="Resize"
           />
           <div
             onMouseDown={(e) => handleResizeStart(e, 'sw')}
-            className="absolute bottom-0 left-0 w-4 h-4 cursor-nesw-resize z-50"
+            className="absolute bottom-0 left-0 w-4 h-4 cursor-nesw-resize pointer-events-auto"
             style={{ background: 'transparent' }}
+            title="Resize"
           />
           <div
             onMouseDown={(e) => handleResizeStart(e, 'ne')}
-            className="absolute top-0 right-0 w-4 h-4 cursor-nesw-resize z-50"
+            className="absolute top-0 right-0 w-4 h-4 cursor-nesw-resize pointer-events-auto"
             style={{ background: 'transparent' }}
+            title="Resize"
           />
           <div
             onMouseDown={(e) => handleResizeStart(e, 'nw')}
-            className="absolute top-0 left-0 w-4 h-4 cursor-nwse-resize z-50"
+            className="absolute top-0 left-0 w-4 h-4 cursor-nwse-resize pointer-events-auto"
             style={{ background: 'transparent' }}
+            title="Resize"
           />
           {/* Edge handles */}
           <div
             onMouseDown={(e) => handleResizeStart(e, 'e')}
-            className="absolute top-0 right-0 w-2 h-full cursor-ew-resize z-50"
+            className="absolute top-0 right-0 w-2 h-full cursor-ew-resize pointer-events-auto"
             style={{ background: 'transparent' }}
+            title="Resize width"
           />
           <div
             onMouseDown={(e) => handleResizeStart(e, 'w')}
-            className="absolute top-0 left-0 w-2 h-full cursor-ew-resize z-50"
+            className="absolute top-0 left-0 w-2 h-full cursor-ew-resize pointer-events-auto"
             style={{ background: 'transparent' }}
+            title="Resize width"
           />
           <div
             onMouseDown={(e) => handleResizeStart(e, 's')}
-            className="absolute bottom-0 left-0 w-full h-2 cursor-ns-resize z-50"
+            className="absolute bottom-0 left-0 w-full h-2 cursor-ns-resize pointer-events-auto"
             style={{ background: 'transparent' }}
+            title="Resize height"
           />
           <div
             onMouseDown={(e) => handleResizeStart(e, 'n')}
-            className="absolute top-0 left-0 w-full h-2 cursor-ns-resize z-50"
+            className="absolute top-0 left-0 w-full h-2 cursor-ns-resize pointer-events-auto"
             style={{ background: 'transparent' }}
+            title="Resize height"
           />
-        </>
+        </div>
       )}
     </DraggableWindow>
   )

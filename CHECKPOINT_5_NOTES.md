@@ -46,9 +46,12 @@ Current implementation state saved as checkpoint 5.
 
 ### 6. Window Resize Functionality
 - **Resize Handles**: Added 8 resize handles (4 corners + 4 edges) to LinkFolderModal
-- **Interactive Resizing**: Users can drag to resize link preview windows
+- **Interactive Resizing**: Users can drag to resize link preview windows both horizontally and vertically
 - **Minimum Constraints**: 400px width, 300px height minimums
 - **Position Adjustment**: Resizing from left/top edges adjusts window position
+- **Content Synchronization**: All inner containers (border, lavender background, iframe) resize together
+- **Dynamic Updates**: Resize handles track window position and update in real-time
+- **Full Vertical Resizing**: Fixed vertical resizing to properly update all content containers
 
 ## Technical Details
 
@@ -79,6 +82,14 @@ Current implementation state saved as checkpoint 5.
 - Webpage previews allow full browsing without leaving the site
 - Folder navigation with image previews
 - Customizable window sizes for optimal viewing
+
+## Resize Functionality (Updated)
+- **Window Resizing**: All link preview windows are now fully resizable
+- **8 Resize Handles**: 4 corner handles + 4 edge handles for precise control
+- **Vertical Resizing**: Fixed vertical resizing to properly update all inner containers
+- **Content Synchronization**: Border, lavender background, and iframe all resize together
+- **Minimum Constraints**: 400px width × 300px height minimums
+- **Dynamic Updates**: Resize handles track window position and size in real-time
 
 ## Next Steps / Future Enhancements
 - Consider adding breadcrumb navigation for folder paths
