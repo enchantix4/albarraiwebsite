@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTitles } from '../hooks/useTitles'
 import EditableText from './EditableText'
@@ -20,6 +20,44 @@ export default function Navigation({ onSectionClick, titles, colors: colorsProp 
   const [isOpen, setIsOpen] = useState(false)
   const { updateTitle } = useTitles()
   const [editMode, setEditMode] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+
+  // Initialize position from localStorage or use default
+  const getInitialPosition = () => {
+    if (typeof window === 'undefined') return { top: 16, left: 16 }
+    
+    const saved = localStorage.getItem('navigationButtonPosition')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        if (parsed.top !== undefined && parsed.left !== undefined) {
+          // Constrain saved position to current viewport
+          const constrainedTop = Math.max(0, Math.min(parsed.top, window.innerHeight - 40))
+          const constrainedLeft = Math.max(0, Math.min(parsed.left, window.innerWidth - 40))
+          return { top: constrainedTop, left: constrainedLeft }
+        }
+      } catch (e) {
+        console.error('Failed to load navigation button position', e)
+      }
+    }
+    // If no saved position, use responsive default
+    const defaultTop = window.innerWidth >= 768 ? 24 : 16
+    const defaultLeft = window.innerWidth >= 768 ? 24 : 16
+    return { top: defaultTop, left: defaultLeft }
+  }
+
+  const [buttonPosition, setButtonPosition] = useState(getInitialPosition)
+
+  // Save button position to localStorage
+  const saveButtonPosition = (top: number, left: number) => {
+    try {
+      localStorage.setItem('navigationButtonPosition', JSON.stringify({ top, left }))
+    } catch (e) {
+      console.error('Failed to save navigation button position', e)
+    }
+  }
 
   // Check if edit mode is active (from HeroImage)
   useEffect(() => {
@@ -43,6 +81,110 @@ export default function Navigation({ onSectionClick, titles, colors: colorsProp 
     }
   }, [])
 
+  // Load and maintain saved position on mount and window resize
+  useEffect(() => {
+    const loadPosition = () => {
+      const saved = localStorage.getItem('navigationButtonPosition')
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          if (parsed.top !== undefined && parsed.left !== undefined) {
+            // Constrain saved position to current viewport
+            const constrainedTop = Math.max(0, Math.min(parsed.top, window.innerHeight - 40))
+            const constrainedLeft = Math.max(0, Math.min(parsed.left, window.innerWidth - 40))
+            setButtonPosition({ top: constrainedTop, left: constrainedLeft })
+            // Update localStorage if position was constrained
+            if (constrainedTop !== parsed.top || constrainedLeft !== parsed.left) {
+              saveButtonPosition(constrainedTop, constrainedLeft)
+            }
+            return
+          }
+        } catch (e) {
+          console.error('Failed to load navigation button position', e)
+        }
+      }
+    }
+
+    loadPosition()
+
+    // Handle window resize - maintain position but constrain to viewport
+    const handleResize = () => {
+      const saved = localStorage.getItem('navigationButtonPosition')
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          if (parsed.top !== undefined && parsed.left !== undefined) {
+            // Constrain to new viewport size
+            const constrainedTop = Math.max(0, Math.min(parsed.top, window.innerHeight - 40))
+            const constrainedLeft = Math.max(0, Math.min(parsed.left, window.innerWidth - 40))
+            setButtonPosition({ top: constrainedTop, left: constrainedLeft })
+            // Update localStorage if position was constrained
+            if (constrainedTop !== parsed.top || constrainedLeft !== parsed.left) {
+              saveButtonPosition(constrainedTop, constrainedLeft)
+            }
+          }
+        } catch (e) {
+          console.error('Failed to load navigation button position on resize', e)
+        }
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  // Handle dragging in edit mode
+  useEffect(() => {
+    if (!editMode || !isDragging) return
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const newTop = e.clientY - dragOffset.y
+      const newLeft = e.clientX - dragOffset.x
+      
+      // Constrain to viewport
+      const constrainedTop = Math.max(0, Math.min(newTop, window.innerHeight - 40))
+      const constrainedLeft = Math.max(0, Math.min(newLeft, window.innerWidth - 40))
+      
+      setButtonPosition({ top: constrainedTop, left: constrainedLeft })
+      saveButtonPosition(constrainedTop, constrainedLeft)
+    }
+
+    const handleMouseUp = () => {
+      // Save position one final time when drag ends to ensure persistence
+      setButtonPosition(prev => {
+        saveButtonPosition(prev.top, prev.left)
+        return prev
+      })
+      setIsDragging(false)
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [editMode, isDragging, dragOffset])
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!editMode) return
+    
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect()
+      setDragOffset({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      })
+      setIsDragging(true)
+    }
+  }
+
   // Helper function to convert to Title Case (first letter uppercase, rest lowercase)
   const toTitleCase = (str: string) => {
     if (!str) return ''
@@ -62,13 +204,17 @@ export default function Navigation({ onSectionClick, titles, colors: colorsProp 
     <>
       {/* Button Menu - Kim Petras style */}
       <button
+        ref={buttonRef}
         type="button"
-        className="fixed top-4 left-4 md:top-6 md:left-6 cursor-pointer transition-all duration-300"
+        className="fixed cursor-pointer transition-all duration-300"
         onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          setIsOpen(prev => !prev)
+          if (!editMode) {
+            e.preventDefault()
+            e.stopPropagation()
+            setIsOpen(prev => !prev)
+          }
         }}
+        onMouseDown={handleMouseDown}
         aria-label={isOpen ? 'Close menu' : 'Open menu'}
         style={{
           width: '40px',
@@ -77,12 +223,15 @@ export default function Navigation({ onSectionClick, titles, colors: colorsProp 
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: 'transparent',
-          border: 'none',
+          border: editMode ? '2px dashed rgba(0, 0, 0, 0.3)' : 'none',
           padding: 0,
           pointerEvents: 'auto',
           zIndex: 9999,
-          cursor: 'pointer',
+          cursor: editMode ? 'move' : 'pointer',
           position: 'fixed',
+          top: `${buttonPosition.top}px`,
+          left: `${buttonPosition.left}px`,
+          userSelect: 'none',
         }}
       >
         {/* Hamburger icon - transforms to X when open */}
