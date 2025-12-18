@@ -30,14 +30,9 @@
     "skills": ["Artistry", "Creative Direction", "Brand Identity", "Music Creation", "Concept Development", "Storytelling", "Music Release"]
   },
   {
-    "roleTitle": "Music Producer",
-    "shortDescription": "Produced original tracks with a genre-fluid sound, providing production for releases and agency-aligned commercial projects including sync and campaign scoring.",
-    "skills": ["Music Production", "Audio Design", "A&R", "Sound Direction"]
-  },
-  {
-    "roleTitle": "Music Scoring",
-    "shortDescription": "Created tailored music compositions for visual content and campaigns, focusing on emotional tone, narrative fit, and brand sound identity.",
-    "skills": ["Scoring", "Sound Branding", "Story-Driven Composition"]
+    "roleTitle": "Music Producer & Scoring",
+    "shortDescription": "Produced original tracks with a genre-fluid sound, providing production for releases and agency-aligned commercial projects including sync and campaign scoring. Created tailored music compositions for visual content and campaigns, focusing on emotional tone, narrative fit, and brand sound identity.",
+    "skills": ["Music Production", "Audio Design", "A&R", "Sound Direction", "Scoring", "Sound Branding", "Story-Driven Composition"]
   }
 ]
 
