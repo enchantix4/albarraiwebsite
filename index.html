@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alba Rari — BUCK UP</title>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: "Lucidity Expand";
+      src: url("fonts/LucidityExpand.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    :root {
+      --bg: #3a3a3a;
+      --bg-deep: #1c1c1c;
+      --fg: #ffffff;
+      --muted: rgba(255,255,255,0.55);
+      --line: rgba(255,255,255,0.16);
+      --font: "Syncopate", sans-serif;
+      --title: "Lucidity Expand", sans-serif;
+      --body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--body);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    img { max-width: 100%; display: block; }
+
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.15rem;
+      height: 1.7rem;
+      padding: 0 0.85rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 0.48rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.78);
+      background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.18) 70%, transparent 100%);
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .top-nav::-webkit-scrollbar { display: none; }
+    .top-nav a {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      padding: 0.3rem 0.05rem;
+      color: inherit;
+    }
+    .top-nav a:hover,
+    .top-nav a:focus-visible { color: #fff; }
+    .top-nav a:focus-visible { outline: 1px dotted #fff; outline-offset: 3px; }
+
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 100vh;
+      background: var(--bg-deep);
+      overflow: hidden;
+    }
+    .bg-teaser,
+    .bg-teaser video,
+    .bg-fallback {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .bg-teaser { z-index: 0; }
+    .bg-teaser video {
+      object-fit: cover;
+      z-index: 1;
+    }
+    .bg-fallback {
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 30% 20%, #3f3f3f 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, #2a2a2a 0%, #151515 60%);
+      animation: bgshift 10s ease-in-out infinite alternate;
+    }
+    .bg-fallback::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.18;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.25) 3px);
+      pointer-events: none;
+    }
+    @keyframes bgshift {
+      from { filter: brightness(0.85); }
+      to { filter: brightness(1.08); }
+    }
+    .bg-teaser.is-playing .bg-fallback { opacity: 0; transition: opacity 0.4s; }
+
+    .track {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      height: 100%;
+      width: 100%;
+      transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .slide {
+      position: relative;
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .sign-rig {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(574px, 42vw);
+      transform: translate(-50%, -50%);
+      z-index: 4;
+      pointer-events: none;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+    }
+    .sign-rig.is-away {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .sign-rig.is-away .sign { pointer-events: none; }
+    .sign {
+      transform-origin: 50% 0;
+      will-change: transform;
+      pointer-events: auto;
+    }
+    .plate-wrap {
+      position: relative;
+      filter: drop-shadow(0 14px 22px rgba(0,0,0,0.45));
+      container-type: inline-size;
+    }
+    .plate-wrap img { width: 100%; height: auto; }
+    .plate-nav {
+      position: absolute;
+      inset: 0;
+    }
+    .plate-nav a {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0;
+      color: #111;
+      z-index: 2;
+    }
+    .plate-nav .ico-stack { position: relative; display: block; line-height: 0; }
+    .plate-nav .ico {
+      display: block;
+      width: auto;
+      height: auto;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+      opacity: 0.9;
+      filter:
+        drop-shadow(0 1px 0 rgba(255,255,255,0.72))
+        drop-shadow(0 -0.5px 0 rgba(0,0,0,0.22));
+      transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+    }
+    .plate-nav .ico {
+      /* ~2x prior 30px box; pocket is inner-line to slot, and BUCK to inner bottom */
+      max-width: 10.7cqi;
+      max-height: 10.03cqi;
+    }
+    .plate-nav .ico-label {
+      position: absolute;
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: clamp(0.56rem, 1.2vw, 0.75rem);
+      letter-spacing: 0.06em;
+      line-height: 1.15;
+      text-transform: uppercase;
+      color: #111;
+      text-shadow:
+        0 1px 0 rgba(255,255,255,0.85),
+        0 -0.5px 0 rgba(0,0,0,0.18);
+      white-space: nowrap;
+      pointer-events: auto;
+      text-align: center;
+    }
+    /* Top labels sit under the icon; bottom labels sit inward, beside it */
+    .plate-nav .ico-label { line-height: 1.15; }
+    .plate-nav .tl .ico-label {
+      top: 100%;
+      margin-top: 0.15rem;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .plate-nav .tr .ico-label {
+      top: 100%;
+      margin-top: 0.15rem;
+      right: 0;
+      text-align: right;
+    }
+    .plate-nav .bl .ico-label {
+      left: 100%;
+      margin-left: 0.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: left;
+    }
+    .plate-nav .br .ico-label {
+      right: 100%;
+      margin-right: 0.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: right;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      line-height: 1.1;
+      gap: 0.02em;
+    }
+    .plate-nav a:hover .ico,
+    .plate-nav a:focus-visible .ico {
+      opacity: 1;
+      transform: scale(1.07);
+      filter:
+        drop-shadow(0 1px 0 rgba(255,255,255,0.85))
+        drop-shadow(0 -0.5px 0 rgba(0,0,0,0.28));
+    }
+    .plate-nav a:focus-visible {
+      outline: 1px dotted #111;
+      outline-offset: 3px;
+    }
+    .plate-nav a { pointer-events: auto; cursor: pointer; transform: translate(-50%, -50%); }
+    .plate-wrap > img { pointer-events: none; }
+    .plate-nav .tl { top: 22.9%; left: 14.5%; }
+    .plate-nav .tr { top: 22.9%; left: 85.5%; }
+    .plate-nav .bl { top: 76.9%; left: 14.5%; }
+    .plate-nav .br { top: 76.9%; left: 85.5%; }
+
+    .game-stage { position: absolute; inset: 0; background: #0d0d0d; }
+    .game-stage iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #0d0d0d;
+    }
+    .game-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font);
+      font-size: clamp(0.7rem, 2vw, 1.1rem);
+      letter-spacing: 0.22em;
+      text-indent: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .game-placeholder.is-off { display: none; }
+    .game-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 4.6rem;
+      transform: translateX(-50%);
+      z-index: 2;
+      font-family: var(--font);
+      font-size: 0.5rem;
+      letter-spacing: 0.18em;
+      text-indent: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+      text-align: center;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .countdown {
+      position: absolute;
+      left: 50%;
+      bottom: 8vh;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      text-align: center;
+      gap: 0.7rem;
+      padding: 0;
+      z-index: 3;
+      width: min(70vw, 28rem);
+      pointer-events: none;
+    }
+    .cd-label {
+      font-family: var(--title);
+      font-weight: 400;
+      font-size: clamp(0.85rem, 3vw, 1.7rem);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .cd-clock {
+      display: flex;
+      gap: clamp(0.55rem, 1.8vw, 1.2rem);
+      font-family: var(--font);
+    }
+    .cd-clock div { min-width: 3.2em; }
+    .cd-clock span {
+      display: block;
+      font-weight: 700;
+      font-size: clamp(0.85rem, 2.5vw, 1.55rem);
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+    .cd-clock small {
+      display: block;
+      margin-top: 0.55rem;
+      font-size: clamp(0.42rem, 1.1vw, 0.62rem);
+      letter-spacing: 0.22em;
+      text-indent: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .yt-cover {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #000;
+      z-index: 5;
+    }
+    .yt-cover .yt-inner {
+      position: absolute;
+    }
+    .yt-cover iframe, .yt-cover .yt-inner {
+      border: 0;
+    }
+    .is-hidden { display: none !important; }
+
+    .mute, .yt-unmute {
+      position: absolute;
+      right: 1.25rem;
+      bottom: 1.2rem;
+      z-index: 6;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font);
+      font-size: 0.52rem;
+      letter-spacing: 0.2em;
+      text-indent: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 0.55rem 0.7rem 0.5rem 0.65rem;
+      min-height: 36px;
+      background: rgba(0,0,0,0.28);
+    }
+    .mute svg, .yt-unmute svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 1.6; }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 6;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.85;
+    }
+    .arrow:hover { opacity: 1; }
+    .arrow.prev { left: 0.4rem; }
+    .arrow.next { right: 0.4rem; }
+    .arrow svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 1.5; }
+
+    .dots {
+      position: absolute;
+      left: 50%;
+      bottom: 1.25rem;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 6;
+    }
+    .dots button {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+    }
+    .dots button.is-on { background: #fff; }
+
+    .content {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+    section.block {
+      padding: 4.5rem 0 4.2rem;
+      border-bottom: 1px solid var(--line);
+    }
+    section.block:last-of-type { border-bottom: 0; }
+    .block h2 {
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.32em;
+      text-indent: 0.32em;
+      text-transform: uppercase;
+      margin-bottom: 1.8rem;
+    }
+    .bio {
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.88);
+      white-space: pre-line;
+      max-width: 38rem;
+    }
+    .album {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 1.6rem;
+      align-items: end;
+    }
+    .album img { width: 200px; height: 200px; object-fit: cover; }
+    .album h3 {
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.24em;
+      text-indent: 0.24em;
+      margin-bottom: 0.85rem;
+    }
+    .album a {
+      font-family: var(--font);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-indent: 0.2em;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      padding-bottom: 2px;
+    }
+    .role { padding: 0 0 1.7rem; margin-bottom: 1.7rem; border-bottom: 1px solid var(--line); }
+    .role:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+    .role h3 {
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-indent: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.45;
+      margin-bottom: 0.55rem;
+    }
+    .role h3 a { border-bottom: 1px solid rgba(255,255,255,0.35); }
+    .role p {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .skills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .skills span {
+      font-family: var(--font);
+      font-size: 0.45rem;
+      letter-spacing: 0.14em;
+      text-indent: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid var(--line);
+      padding: 0.35rem 0.45rem 0.28rem;
+      color: rgba(255,255,255,0.8);
+    }
+    .store p { color: var(--muted); font-size: 0.95rem; line-height: 1.6; max-width: 28rem; }
+    .store .lead {
+      font-family: var(--font);
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-indent: 0.22em;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 0.7rem;
+    }
+    form { max-width: 28rem; }
+    label {
+      display: block;
+      font-family: var(--font);
+      font-size: 0.55rem;
+      letter-spacing: 0.22em;
+      text-indent: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 0.45rem;
+    }
+    input, select {
+      width: 100%;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.35);
+      color: #fff;
+      font-family: var(--body);
+      font-size: 0.95rem;
+      padding: 0.45rem 0 0.55rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0;
+      outline: none;
+      appearance: none;
+    }
+    select { background: var(--bg); }
+    select option { background: #2c2c2c; color: #fff; }
+    input:focus, select:focus { border-bottom-color: #fff; }
+    .submit {
+      width: 100%;
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 0.68rem;
+      letter-spacing: 0.28em;
+      text-indent: 0.14em;
+      text-transform: uppercase;
+      background: #fff;
+      color: #1a1a1a;
+      padding: 0.95rem 1rem 0.85rem;
+      margin-top: 0.4rem;
+    }
+    .consent {
+      margin-top: 1.1rem;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 1.4rem 1.5rem 1.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    footer .copy, footer nav a {
+      font-family: var(--font);
+      font-size: 0.52rem;
+      letter-spacing: 0.2em;
+      text-indent: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    footer nav { display: flex; flex-wrap: wrap; gap: 0.85rem 1.35rem; }
+    footer nav a { color: #fff; }
+    footer nav a:hover { border-bottom: 1px solid #fff; }
+
+    @media (max-width: 700px) {
+      .sign-rig { width: min(80vw, 336px); }
+      .plate-nav .tl { top: 22.9%; left: 14.5%; }
+      .plate-nav .tr { top: 22.9%; left: 85.5%; }
+      .plate-nav .bl { top: 76.9%; left: 14.5%; }
+      .plate-nav .br { top: 76.9%; left: 85.5%; }
+      .plate-nav .ico-label { font-size: 0.65rem; letter-spacing: 0.05em; }
+      .plate-nav .br .ico-label { font-size: 0.58rem; }
+      .album { grid-template-columns: 1fr; }
+      .album img { width: 160px; height: 160px; }
+      .top-nav {
+        justify-content: flex-start;
+        gap: 0.95rem;
+        font-size: 0.44rem;
+        letter-spacing: 0.14em;
+        height: 1.65rem;
+      }
+      .mute, .yt-unmute {
+        right: 0.7rem;
+        bottom: 0.7rem;
+        font-size: 0.42rem;
+        padding: 0.4rem 0.5rem;
+        min-height: 30px;
+      }
+      .dots { bottom: 0.75rem; }
+      .arrow { width: 36px; height: 36px; }
+      .arrow.prev { left: 0; }
+      .arrow.next { right: 0; }
+      section.block { padding: 3.1rem 0 2.8rem; }
+      footer { justify-content: center; text-align: center; }
+      .game-hint { bottom: 3.6rem; font-size: 0.4rem; white-space: normal; padding: 0 1rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .track, .bg-fallback, .sign-rig, .plate-nav .ico, .plate-nav .ico-label { transition: none; animation: none; }
+      .plate-nav a:hover .ico, .plate-nav a:focus-visible .ico { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav" aria-label="Site">
+    <a href="#bio">Bio</a>
+    <a href="#resume">Resume</a>
+    <a href="#store">Store</a>
+    <a href="#game" data-slide="1">The Bitter Blonde</a>
+    <a href="#video" data-slide="2">Buck Up</a>
+  </nav>
+
+  <section class="hero" id="hero" aria-label="Featured carousel">
+    <div class="bg-teaser" id="bg-teaser">
+      <div class="bg-fallback" aria-hidden="true"></div>
+      <video id="teaser" muted autoplay loop playsinline preload="auto" poster="media/teaser.jpg" src="media/teaser.mp4"></video>
+    </div>
+
+    <div class="track" id="track">
+      <article class="slide" data-slide="0" aria-label="Teaser and license plate menu"></article>
+
+      <article class="slide" data-slide="1" id="game" aria-label="The Bitter Blonde">
+        <div class="game-stage">
+          <iframe id="game-frame" title="The Bitter Blonde" allow="autoplay; fullscreen"></iframe>
+          <div class="game-placeholder" id="game-ph">Game loads here</div>
+          <p class="game-hint">Click the game to play — keyboard controls</p>
+        </div>
+      </article>
+
+      <article class="slide" data-slide="2" id="video" aria-label="Official video">
+        <div class="countdown" id="countdown">
+          <p class="cd-label">Official Video</p>
+          <div class="cd-clock" aria-live="polite">
+            <div><span id="cd-d">00</span><small>Days</small></div>
+            <div><span id="cd-h">00</span><small>Hours</small></div>
+            <div><span id="cd-m">00</span><small>Min</small></div>
+            <div><span id="cd-s">00</span><small>Sec</small></div>
+          </div>
+        </div>
+        <div class="yt-cover is-hidden" id="yt-cover">
+          <div class="yt-inner" id="yt-inner"><div id="yt-player"></div></div>
+        </div>
+      </article>
+    </div>
+
+    <div class="sign-rig" id="sign-rig">
+      <div class="sign" id="sign">
+        <div class="plate-wrap" id="plate">
+          <img src="images/plate.webp" width="1800" height="940" alt="Alba Rari Buck Up license plate">
+          <nav class="plate-nav" aria-label="Primary">
+            <a class="tl" href="#bio" aria-label="Bio">
+              <span class="ico-stack">
+                <img class="ico" src="images/icons/bio.webp" width="512" height="255" alt="">
+                <span class="ico-label" aria-hidden="true">Bio</span>
+              </span>
+            </a>
+            <a class="tr" href="#resume" aria-label="Resume">
+              <span class="ico-stack">
+                <img class="ico" src="images/icons/resume.svg" width="1190" height="986" alt="">
+                <span class="ico-label" aria-hidden="true">Resume</span>
+              </span>
+            </a>
+            <a class="bl" href="#store" aria-label="Store">
+              <span class="ico-stack">
+                <img class="ico" src="images/icons/store.webp" width="333" height="512" alt="">
+                <span class="ico-label" aria-hidden="true">Store</span>
+              </span>
+            </a>
+            <a class="br" href="#game" data-slide="1" aria-label="The Bitter Blonde">
+              <span class="ico-stack">
+                <img class="ico" src="images/icons/bitter-blonde.svg" width="1564" height="1014" alt="">
+                <span class="ico-label" aria-hidden="true"><span>The Bitter</span><span>Blonde</span></span>
+              </span>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <button class="arrow prev" type="button" aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4L7 12l8 8"/></svg>
+    </button>
+    <button class="arrow next" type="button" aria-label="Next slide">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg>
+    </button>
+    <div class="dots" id="dots" role="tablist" aria-label="Slides">
+      <button type="button" class="is-on" aria-label="Slide 1, teaser"></button>
+      <button type="button" aria-label="Slide 2, The Bitter Blonde"></button>
+      <button type="button" aria-label="Slide 3, official video"></button>
+    </div>
+    <button class="mute" type="button" id="mute" aria-pressed="true" aria-label="Unmute teaser">
+      <svg id="mute-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 10v4h4l5 4V6L7 10H3z"/>
+        <path d="M16 9l6 6M22 9l-6 6"/>
+      </svg>
+      <span id="mute-label">Muted</span>
+    </button>
+    <button class="yt-unmute is-hidden" type="button" id="yt-unmute" aria-label="Unmute official video">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 10v4h4l5 4V6L7 10H3z"/>
+        <path d="M16 8.5a5 5 0 0 1 0 7"/>
+        <path d="M18.5 6a8 8 0 0 1 0 12"/>
+      </svg>
+      <span>Unmute</span>
+    </button>
+  </section>
+
+  <div class="content">
+    <section class="block" id="bio">
+      <h2>Bio</h2>
+      <p class="bio">Hello,
+
+My name is Alba Rari. I'm an artist, producer, and creative director. I make pop like couture: dramatic, cinematic, and built by hand. I've led global media buying, shaped brand strategy for startups, and directed visuals and PR for fashion labels. I am the moment — and the strategy behind it.
+
+xxx
+
+Alba</p>
+    </section>
+
+    <section class="block" id="music">
+      <h2>Music</h2>
+      <div class="album">
+        <img src="images/itch-cover.png" alt="ITCH album cover">
+        <div>
+          <h3>ITCH</h3>
+          <a href="https://artists.landr.com/ITCH" target="_blank" rel="noopener noreferrer">stream/download</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="resume">
+      <h2>Resume</h2>
+      <article class="role">
+        <h3>Art Director &amp; Stylist — Lela Boutique</h3>
+        <p>Led the creative direction and styling of a branded photoshoot for Lela Boutique. Delivered concept development, look styling, shot planning, and project management, crafting a visual narrative that elevated brand identity.</p>
+        <div class="skills"><span>Art Direction</span><span>Styling</span><span>Creative Concepting</span><span>Photoshoot Production</span><span>Brand Storytelling</span></div>
+      </article>
+      <article class="role">
+        <h3><a href="https://www.vabble.io/resources" target="_blank" rel="noopener noreferrer">Copywriter</a></h3>
+        <p>Created persuasive, high-impact copy for digital campaigns, brand messaging, product positioning, and social content. Specialized in tone creation and culturally nuanced voice systems.</p>
+        <div class="skills"><span>Copywriting</span><span>Brand Voice</span><span>Messaging</span><span>Conversion Strategy</span></div>
+      </article>
+      <article class="role">
+        <h3>Media Buyer</h3>
+        <p>Planned and managed paid advertising strategies across digital channels, optimizing budget allocation and performance outcomes with creative testing and analytics.</p>
+        <div class="skills"><span>Paid Media Strategy</span><span>Performance Marketing</span><span>Campaign Optimization</span></div>
+      </article>
+      <article class="role">
+        <h3>Marketing Consultant</h3>
+        <p>Developed marketing strategy frameworks for early-stage brands, advising on positioning, organic growth, audience strategy, and launch planning. Two pieces were featured as number one article in Glass magazine Hong Kong and UK.</p>
+        <div class="skills"><span>Marketing Strategy</span><span>Go-To-Market</span><span>Brand Positioning</span></div>
+      </article>
+      <article class="role">
+        <h3>Art Director — JoyntPay</h3>
+        <p>Handled creative direction for JoyntPay, developing brand identity, visual language, and tone of voice. Led copywriting for audience messaging, created digital assets for campaigns, and produced audio-visual ads to support digital marketing execution.</p>
+        <div class="skills"><span>Art Direction</span><span>Brand Identity</span><span>Copywriting</span><span>Creative Direction</span><span>Digital Marketing</span><span>Visual Design</span></div>
+      </article>
+      <article class="role">
+        <h3><a href="https://artists.landr.com/ITCH" target="_blank" rel="noopener noreferrer">Founder &amp; Artist — Alba Rari</a></h3>
+        <p>Launched Alba Rari as a music project, overseeing full creative direction, songwriting, production, and visual identity. Released debut album ITCH, handling branding, marketing assets, and campaign strategy end-to-end.</p>
+        <div class="skills"><span>Artistry</span><span>Creative Direction</span><span>Brand Identity</span><span>Music Creation</span><span>Concept Development</span><span>Storytelling</span><span>Music Release</span></div>
+      </article>
+      <article class="role">
+        <h3><a href="https://soundcloud.com/alba-rarixx" target="_blank" rel="noopener noreferrer">Music Producer &amp; Scoring</a></h3>
+        <p>Produced original tracks with a genre-fluid sound, providing production for releases and agency-aligned commercial projects including sync and campaign scoring. Created tailored music compositions for visual content and campaigns, focusing on emotional tone, narrative fit, and brand sound identity.</p>
+        <div class="skills"><span>Music Production</span><span>Audio Design</span><span>A&amp;R</span><span>Sound Direction</span><span>Scoring</span><span>Sound Branding</span><span>Story-Driven Composition</span></div>
+      </article>
+    </section>
+
+    <section class="block store" id="store">
+      <h2>Store</h2>
+      <p class="lead">Merch</p>
+      <p class="lead">Coming Soon</p>
+      <p>Merchandise will be available soon. Check back for updates!</p>
+    </section>
+
+    <section class="block" id="signup">
+      <h2>Sign Up</h2>
+      <form action="#" method="post" onsubmit="return false">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="your@email.com" autocomplete="email">
+        <label for="country">Choose Country</label>
+        <select id="country" name="country">
+          <option value="">Select...</option>
+          <option>United Kingdom</option>
+          <option>United States</option>
+          <option>Argentina</option>
+          <option>France</option>
+          <option>Germany</option>
+          <option>Italy</option>
+          <option>Spain</option>
+          <option>Other</option>
+        </select>
+        <button class="submit" type="submit">Sign Up</button>
+        <p class="consent">Emails will be sent by or on behalf of Alba Rari. You may withdraw your consent at any time.</p>
+      </form>
+    </section>
+  </div>
+
+  <footer>
+    <div class="copy">© Alba Rari</div>
+    <nav aria-label="Social">
+      <a href="https://www.instagram.com/alba.rarixx/" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://www.tiktok.com/@alba.rarixx" target="_blank" rel="noopener noreferrer">TikTok</a>
+      <a href="https://www.youtube.com/@Alba.Rarixx" target="_blank" rel="noopener noreferrer">YouTube</a>
+      <a href="#signup">Sign Up</a>
+      <a href="https://artists.landr.com/ITCH" target="_blank" rel="noopener noreferrer">Music</a>
+      <a href="game/CREDITS.md">Credits</a>
+    </nav>
+  </footer>
+
+  <script>
+    (function () {
+      const GAME_SRC = "game/index.html";
+      const YT_ID = "OtpQ1j1zgQY";
+      const RELEASE_AT = Date.parse("2026-11-30T00:00:00Z");
+      const params = new URLSearchParams(location.search);
+      const previewLive = params.get("preview") === "live";
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const isPhone = /iPhone|Android.*Mobile/.test(navigator.userAgent);
+
+      const track = document.getElementById("track");
+      const dots = Array.from(document.querySelectorAll("#dots button"));
+      const muteBtn = document.getElementById("mute");
+      const muteLabel = document.getElementById("mute-label");
+      const muteIcon = document.getElementById("mute-icon");
+      const teaser = document.getElementById("teaser");
+      const bg = document.getElementById("bg-teaser");
+      const sign = document.getElementById("sign");
+      const plate = document.getElementById("plate");
+      const gameFrame = document.getElementById("game-frame");
+      const gamePh = document.getElementById("game-ph");
+      const countdownEl = document.getElementById("countdown");
+      const ytCover = document.getElementById("yt-cover");
+      const ytInner = document.getElementById("yt-inner");
+      const ytUnmute = document.getElementById("yt-unmute");
+      const total = 3;
+      let index = 0;
+      let muted = true;
+      let ytPlayer = null;
+      let ytApiReady = false;
+
+      function isLive() { return previewLive || Date.now() >= RELEASE_AT; }
+
+      const mutedSvg = '<path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M16 9l6 6M22 9l-6 6"/>';
+      const unmutedSvg = '<path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M16 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8 8 0 0 1 0 12"/>';
+
+      function setTeaserMute(next) {
+        muted = next;
+        teaser.muted = muted;
+        muteBtn.setAttribute("aria-pressed", muted ? "true" : "false");
+        muteBtn.setAttribute("aria-label", muted ? "Unmute teaser" : "Mute teaser");
+        muteLabel.textContent = muted ? "Muted" : "Sound on";
+        muteIcon.innerHTML = muted ? mutedSvg : unmutedSvg;
+      }
+
+      teaser.addEventListener("playing", function () { bg.classList.add("is-playing"); scheduleWarmGame(); });
+      teaser.addEventListener("error", function () { bg.classList.remove("is-playing"); });
+      teaser.play().then(function () { bg.classList.add("is-playing"); scheduleWarmGame(); }).catch(function () { scheduleWarmGame(); });
+
+      muteBtn.addEventListener("click", function () { setTeaserMute(!muted); });
+
+      // Invisible top-centre pendulum: hang-drop on load, same physics on corner pushes. No idle float.
+      const rig = document.getElementById("sign-rig");
+      const heroEl = document.getElementById("hero");
+      const TO_DEG = 180 / Math.PI;
+      const TO_RAD = Math.PI / 180;
+      let y = 0, vy = 0, angle = 0, va = 0, raf = 0, last = 0, caught = true;
+      const gOverL = 62;
+      const dampA = 3.45;
+      const kY = 220;
+      const cY = 14;
+      function renderSign() {
+        sign.style.transform = "translateY(" + y + "px) rotate(" + angle + "deg)";
+      }
+      function settled() {
+        return Math.abs(angle) < 0.05 && Math.abs(va) < 0.12 && Math.abs(y) < 0.3 && Math.abs(vy) < 0.5;
+      }
+      function stopLoop() {
+        if (raf) { cancelAnimationFrame(raf); raf = 0; }
+        last = 0;
+      }
+      function tick(now) {
+        const dt = Math.min(0.032, last ? (now - last) / 1000 : 0.016);
+        last = now;
+        const th = angle * TO_RAD;
+        const accRad = -gOverL * Math.sin(th) - 5 * Math.sin(2 * th) - dampA * va * TO_RAD;
+        va += accRad * TO_DEG * dt;
+        angle += va * dt;
+        vy += (-kY * y - cY * vy) * dt;
+        y += vy * dt;
+        if (!caught && y >= 0 && vy > 0) {
+          caught = true;
+          y = 0;
+          vy *= 0.52;
+          va += (angle >= 0 ? -1 : 1) * (22 + Math.random() * 16);
+        }
+        if (settled()) {
+          y = 0; vy = 0; angle = 0; va = 0;
+          renderSign();
+          stopLoop();
+          return;
+        }
+        renderSign();
+        raf = requestAnimationFrame(tick);
+      }
+      function startLoop() {
+        if (!raf && !reduced) { last = 0; raf = requestAnimationFrame(tick); }
+      }
+      function hangDrop() {
+        if (reduced) { y = 0; vy = 0; angle = 0; va = 0; caught = true; renderSign(); return; }
+        const dir = Math.random() < 0.5 ? -1 : 1;
+        y = -17 - Math.random() * 5;
+        vy = 250 + Math.random() * 55;
+        angle = dir * (8.2 + Math.random() * 1.8);
+        va = dir * (8 + Math.random() * 14);
+        caught = false;
+        renderSign();
+        startLoop();
+      }
+      function pushCorner(cls) {
+        if (reduced) return;
+        const map = {
+          tl: { vy: -80, va: -230 },
+          tr: { vy: -80, va: 230 },
+          bl: { vy: 50, va: -300 },
+          br: { vy: 50, va: 300 }
+        };
+        const p = map[cls] || map.tl;
+        vy += p.vy;
+        va += p.va + (Math.random() * 28 - 14);
+        caught = true;
+        startLoop();
+      }
+      function afterPush(cls, fn) {
+        pushCorner(cls);
+        if (reduced) { fn(); return; }
+        setTimeout(fn, 420);
+      }
+      function setHash(href) {
+        if (!href || href.charAt(0) !== "#") return;
+        const url = location.pathname + location.search + href;
+        if (location.pathname + location.search + location.hash === url) return;
+        history.replaceState(null, "", url);
+      }
+      function followNav(a) {
+        const href = a.getAttribute("href");
+        const slideAttr = a.getAttribute("data-slide");
+        setHash(href);
+        if (slideAttr !== null) {
+          go(Number(slideAttr));
+          heroEl.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+        } else {
+          const target = href ? document.querySelector(href) : null;
+          if (target) target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+        }
+      }
+      document.querySelectorAll(".plate-nav a").forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          const cls = (a.className || "").trim().split(/\s+/)[0];
+          e.preventDefault();
+          afterPush(cls, function () { followNav(a); });
+        });
+      });
+      document.querySelectorAll(".top-nav a").forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          e.preventDefault();
+          followNav(a);
+        });
+      });
+
+
+      const GAME_PREFETCH = [
+        "game/style.css",
+        "https://unpkg.com/three@0.147.0/build/three.min.js",
+        "https://unpkg.com/three@0.147.0/examples/js/postprocessing/Pass.js",
+        "https://unpkg.com/three@0.147.0/examples/js/shaders/CopyShader.js",
+        "https://unpkg.com/three@0.147.0/examples/js/shaders/LuminosityHighPassShader.js",
+        "https://unpkg.com/three@0.147.0/examples/js/shaders/FilmShader.js",
+        "https://unpkg.com/three@0.147.0/examples/js/shaders/VignetteShader.js",
+        "https://unpkg.com/three@0.147.0/examples/js/postprocessing/ShaderPass.js",
+        "https://unpkg.com/three@0.147.0/examples/js/postprocessing/RenderPass.js",
+        "https://unpkg.com/three@0.147.0/examples/js/postprocessing/MaskPass.js",
+        "https://unpkg.com/three@0.147.0/examples/js/postprocessing/EffectComposer.js",
+        "https://unpkg.com/three@0.147.0/examples/js/postprocessing/UnrealBloomPass.js",
+        "https://unpkg.com/three@0.147.0/examples/js/postprocessing/FilmPass.js",
+        "https://unpkg.com/three@0.147.0/examples/js/loaders/GLTFLoader.js",
+        "https://unpkg.com/three@0.147.0/examples/js/libs/fflate.min.js",
+        "https://unpkg.com/three@0.147.0/examples/js/loaders/FBXLoader.js",
+        "https://unpkg.com/three@0.147.0/examples/js/utils/SkeletonUtils.js",
+        "game/models.js",
+        "game/assets/textures/leather_red_03_256.b64.js",
+        "game/ps2textures.js",
+        "game/assets/shaders/ps2Shader.js",
+        "game/assets/cc_models.js",
+        "game/assets/prop_models.js",
+        "game/assets/street_models.js",
+        "game/assets/kenney_chars.js",
+        "game/assets/ps2_chars.js",
+        "game/assets/urban_props.js",
+        "game/assets/sk_chars.js",
+        "game/assets/ubc_chars.js",
+        "game/assets/pbr_pack.js",
+        "game/assets/street_pack.js",
+        "game/assets/bb_sign.js",
+        "game/assets/real_pack.js",
+        "game/assets/props_pack.js",
+        "game/assets/gta_street.js",
+        "game/scene3d.js",
+        "game/assets/itch_incoming/manifest.js",
+        "game/assets/itch_incoming/itch_models.js",
+        "game/assets/itchLoader.js",
+        "game/game.js",
+        "game/assets/buckup_ride_bg.jpg",
+        "game/assets/buckup_trailer_exterior.jpg",
+        "game/assets/buckup_trailer_bar.jpg",
+        "game/assets/buckup_trailer_bull.jpg",
+        "game/assets/buckup_trailer_rider.jpg"
+];
+      let gameWarmDone = false;
+      let gameWarmPromise = null;
+      function warmGame() {
+        if (gameWarmPromise) return gameWarmPromise;
+        gameWarmPromise = (async function () {
+          const queue = GAME_PREFETCH.slice();
+          const workers = 3;
+          async function worker() {
+            while (queue.length) {
+              const url = queue.shift();
+              try {
+                await fetch(url, { cache: "force-cache", mode: "cors", credentials: "omit" });
+              } catch (e) {
+                try { await fetch(url, { cache: "force-cache", mode: "no-cors", credentials: "omit" }); } catch (e2) {}
+              }
+            }
+          }
+          await Promise.all(Array.from({ length: workers }, worker));
+          gameWarmDone = true;
+          window.__gameWarmDone = true;
+        })();
+        window.__gameWarmPromise = gameWarmPromise;
+        return gameWarmPromise;
+      }
+      function scheduleWarmGame() {
+        if (isPhone) return;
+        const start = function () { warmGame(); };
+        if (typeof requestIdleCallback === "function") requestIdleCallback(start, { timeout: 2000 });
+        else setTimeout(start, 600);
+      }
+
+      function loadGame() {
+        if (isPhone) return;
+        if (gameFrame.getAttribute("data-loaded") === "1") return;
+        gameFrame.setAttribute("data-loaded", "1");
+        gameFrame.addEventListener("load", function () { gamePh.classList.add("is-off"); });
+        gameFrame.src = GAME_SRC;
+      }
+
+      function pad(n) { return String(n).padStart(2, "0"); }
+      function updateCountdown() {
+        const left = Math.max(0, RELEASE_AT - Date.now());
+        const s = Math.floor(left / 1000);
+        document.getElementById("cd-d").textContent = pad(Math.floor(s / 86400));
+        document.getElementById("cd-h").textContent = pad(Math.floor((s % 86400) / 3600));
+        document.getElementById("cd-m").textContent = pad(Math.floor((s % 3600) / 60));
+        document.getElementById("cd-s").textContent = pad(s % 60);
+        if (left <= 0 && !previewLive) showOfficialVideo();
+        return left;
+      }
+
+      function sizeYouTube() {
+        const w = ytCover.clientWidth, h = ytCover.clientHeight;
+        if (!w || !h) return;
+        const ar = 16 / 9;
+        let iw, ih;
+        if (w / h > ar) { iw = w; ih = w / ar; } else { ih = h; iw = h * ar; }
+        ytInner.style.width = iw + "px";
+        ytInner.style.height = ih + "px";
+        ytInner.style.left = (w - iw) / 2 + "px";
+        ytInner.style.top = (h - ih) / 2 + "px";
+        const frame = ytInner.querySelector("iframe");
+        if (frame) {
+          frame.style.width = "100%";
+          frame.style.height = "100%";
+          frame.style.position = "absolute";
+          frame.style.inset = "0";
+        }
+      }
+
+      function loadYouTubeApi(cb) {
+        if (window.YT && YT.Player) { ytApiReady = true; cb(); return; }
+        const prev = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = function () {
+          ytApiReady = true;
+          if (prev) prev();
+          cb();
+        };
+        if (!document.getElementById("yt-api")) {
+          const s = document.createElement("script");
+          s.id = "yt-api";
+          s.src = "https://www.youtube.com/iframe_api";
+          document.head.appendChild(s);
+        }
+      }
+
+      function showOfficialVideo() {
+        countdownEl.classList.add("is-hidden");
+        ytCover.classList.remove("is-hidden");
+        ytUnmute.classList.remove("is-hidden");
+        muteBtn.classList.add("is-hidden");
+        hidePlate(true);
+        heroEl.classList.remove("is-countdown");
+        teaser.pause();
+        loadYouTubeApi(function () {
+          if (ytPlayer) { try { ytPlayer.mute(); ytPlayer.playVideo(); } catch (e) {} sizeYouTube(); return; }
+          ytPlayer = new YT.Player("yt-player", {
+            videoId: YT_ID,
+            width: "100%",
+            height: "100%",
+            playerVars: {
+              autoplay: 1,
+              mute: 1,
+              controls: 0,
+              modestbranding: 1,
+              rel: 0,
+              playsinline: 1,
+              fs: 0,
+              iv_load_policy: 3,
+              disablekb: 1,
+              origin: location.origin
+            },
+            events: {
+              onReady: function (e) {
+                e.target.mute();
+                e.target.playVideo();
+                sizeYouTube();
+              }
+            }
+          });
+          sizeYouTube();
+        });
+      }
+
+      ytUnmute.addEventListener("click", function () {
+        if (!ytPlayer) return;
+        try { ytPlayer.unMute(); ytPlayer.setVolume(100); ytPlayer.playVideo(); } catch (e) {}
+        ytUnmute.classList.add("is-hidden");
+      });
+      window.addEventListener("resize", sizeYouTube);
+
+      let plateChromeReady = false;
+      function hidePlate(away) {
+        if (!plateChromeReady) {
+          rig.style.transition = "none";
+          rig.classList.toggle("is-away", away);
+          void rig.offsetWidth;
+          rig.style.transition = "";
+          plateChromeReady = true;
+        } else {
+          rig.classList.toggle("is-away", away);
+        }
+      }
+
+      function syncChrome() {
+        const live = isLive();
+        const onVideo = index === 2;
+        hidePlate(index !== 0);
+        heroEl.classList.toggle("is-countdown", onVideo && !live);
+        muteBtn.classList.toggle("is-hidden", onVideo && live);
+        ytUnmute.classList.toggle("is-hidden", !(onVideo && live));
+        if (index === 0 || (index === 2 && !live)) {
+          teaser.play().catch(function () {});
+        } else {
+          teaser.pause();
+        }
+        if (index === 1) {
+          // If we warmed the iframe off-screen, restart the trailer now so the
+          // opening sequence begins when the slide is shown. Otherwise load
+          // after the swipe so the heavy iframe does not stall the transition.
+          if (gameFrame.getAttribute("data-loaded") === "1") {
+            restartTrailerIfWarmed();
+          } else if (reduced) {
+            loadGame();
+          } else {
+            const done = function (e) {
+              if (e && e.target !== track) return;
+              track.removeEventListener("transitionend", done);
+              clearTimeout(fallback);
+              if (index === 1) {
+                if (gameFrame.getAttribute("data-loaded") === "1") restartTrailerIfWarmed();
+                else loadGame();
+              }
+            };
+            track.addEventListener("transitionend", done);
+            var fallback = setTimeout(done, 700);
+          }
+        }
+        if (index === 2) {
+          if (live) showOfficialVideo();
+          else updateCountdown();
+        }
+      }
+
+      function go(n) {
+        index = (n + total) % total;
+        track.style.transform = "translateX(-" + (index * 100) + "%)";
+        heroEl.scrollLeft = 0;
+        heroEl.scrollTop = 0;
+        dots.forEach(function (d, i) { d.classList.toggle("is-on", i === index); });
+        syncChrome();
+      }
+
+      document.querySelector(".arrow.prev").addEventListener("click", function () { go(index - 1); });
+      document.querySelector(".arrow.next").addEventListener("click", function () { go(index + 1); });
+      dots.forEach(function (d, i) { d.addEventListener("click", function () { go(i); }); });
+      document.addEventListener("keydown", function (e) {
+        if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "IFRAME")) return;
+        if (e.key === "ArrowLeft") go(index - 1);
+        if (e.key === "ArrowRight") go(index + 1);
+      });
+
+      let cdTimer = setInterval(function () {
+        if (!isLive()) updateCountdown();
+        else { clearInterval(cdTimer); if (index === 2) showOfficialVideo(); }
+      }, 1000);
+      updateCountdown();
+
+      const hash = location.hash;
+      const startSlide = parseInt(params.get("slide") || "1", 10);
+      if (hash === "#game") go(1);
+      else if (hash === "#video") go(2);
+      else go((startSlide >= 1 && startSlide <= 3 ? startSlide : 1) - 1);
+      if (index === 0) hangDrop();
+    })();
+  </script>
+  <style id="phone-play-css">
+    .phone-play {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d0d0d;
+    }
+    .phone-play button {
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-indent: 0.18em;
+      text-transform: uppercase;
+      color: #111;
+      background: #fff;
+      border: 0;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0.85rem 1.5rem;
+      cursor: pointer;
+    }
+    .phone-game-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100dvh;
+      z-index: 200;
+      background: #000;
+    }
+    .phone-game-overlay iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+    .phone-game-overlay .phone-game-close {
+      position: absolute;
+      top: 0.55rem;
+      right: 0.6rem;
+      z-index: 2;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 1.35rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .phone-game-overlay .phone-game-help {
+      position: absolute;
+      right: 0.7rem;
+      bottom: 0.7rem;
+      z-index: 2;
+      font-family: var(--font);
+      font-size: 0.48rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.82);
+    }
+  </style>
+  <script>
+    (function () {
+      if (!/iPhone|Android.*Mobile/.test(navigator.userAgent)) return;
+      var stage = document.querySelector(".game-stage");
+      if (!stage) return;
+      var wrap = document.createElement("div");
+      wrap.className = "phone-play";
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "Play";
+      wrap.appendChild(btn);
+      stage.appendChild(wrap);
+      btn.addEventListener("click", function () {
+        var overlay = document.createElement("div");
+        overlay.className = "phone-game-overlay";
+        var frame = document.createElement("iframe");
+        frame.title = "The Bitter Blonde";
+        frame.allow = "accelerometer; gyroscope; fullscreen; autoplay";
+        frame.setAttribute("allow", "accelerometer; gyroscope; fullscreen; autoplay");
+        var close = document.createElement("button");
+        close.type = "button";
+        close.className = "phone-game-close";
+        close.setAttribute("aria-label", "Close");
+        close.textContent = "✕";
+        var help = document.createElement("a");
+        help.className = "phone-game-help";
+        help.href = "/buck-up-phone/";
+        help.textContent = "Having trouble? Open full page";
+        overlay.appendChild(frame);
+        overlay.appendChild(close);
+        overlay.appendChild(help);
+        close.addEventListener("click", function () {
+          frame.src = "about:blank";
+          frame.remove();
+          overlay.remove();
+        });
+        document.body.appendChild(overlay);
+        frame.src = "/buck-up-phone/";
+      });
+    })();
+  </script>
+</body>
+</html>
