@@ -1,0 +1,33 @@
+BUCK UP — CC BY 4.0 Sketchfab models (16 Nov 2026)
+
+"Farm (low poly)" (https://skfb.ly/otPnE) by Avmifi is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"Cowboy Confidence" (https://skfb.ly/pNpKF) by restore50 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"Summer Confidence" (https://skfb.ly/pNGDE) by Grauwolf is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"GTA sa NPC 1" (https://skfb.ly/pE7Ys) by Uususykoolaid is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+Poly Haven "Leather Red 03" (https://polyhaven.com/a/leather_red_03) is CC0 1.0.
+"Cyberpunk Signs" (https://poly.pizza/m/rsZJjigt1X) by Quaternius is CC0 1.0.
+Modly (https://github.com/lightningpixel/modly) by Lightning Pixel is MIT; used as a local tool, no generated meshes shipped in this pass.
+
+Street props, Poly Pizza (CC BY): Queen Palm Tree, Convertible, Car, Telephone pole by Poly by Google; Camaro by jacobleee05.
+More street props, Poly Pizza: Dumpster by KolosStudios (CC BY); Vending Machine by Don Carson (CC BY); Hydrant, Motorcycle, Traffic light by Poly by Google (CC BY). CC0: Quaternius, Kay Lousberg, CreativeTrio.
+
+Kenney - Animated Characters Protagonists v1.1 (CC0 1.0) - https://kenney.nl/assets/animated-characters-protagonists
+Wobble Blocks - PS2 Styled Characters (CC0) - https://opengameart.org/content/ps2-styled-characters
+Kenney - Retro Urban Kit (CC0) - https://opengameart.org/content/retro-urban-kit
+Sketchfab (CC BY 4.0 / CC BY): "BadAssJailer" by RG3D (https://sketchfab.com/Reifus.Rufus); "psx man" by petya-petyavich; "Ceomi - Woman dancing." by BloedSkrif. Licence: http://creativecommons.org/licenses/by/4.0/
+Sketchfab (CC BY 4.0): "Gangster Brute Guy" by SmoothYup; "LP Chevrolet Impala 1960" by yanot; "PS2 car pack" by zaidluigi64; "Thug Gold Digger City Van Low Poly gangster" by 00amza; "Slum House" by akshathrao26. Licence: http://creativecommons.org/licenses/by/4.0/
+Asphalt 031 texture - ambientCG (https://ambientcg.com), CC0. Quaternius Street Pack - Quaternius, CC0 (not yet used).
+Poly Haven (CC0): Cowboy Town Saloon HDRI, Bar Chair Round 01, Wooden Barrels 01.
+Poly Haven (CC0) textures: Wood Floor Deck, Weathered Brown Planks, Wood Table Worn, Dark Wood.
+Sketchfab (CC BY 4.0) by Renderpeople: Manuel Animated 001, Sophia Animated 003, Nathan Animated 003, Carla Rigged 001, Eric Rigged 001. Licence: http://creativecommons.org/licenses/by/4.0/
+Sketchfab (CC BY 4.0): "Black Bull" by Znvne179 (@daychiefaden8).
+
+Poly Haven (CC0): asphalt_02, concrete_pavement_02, yellow_plaster_02, worn_brick_wall, peeling_painted_wall textures. ambientCG (CC0): GraffitiSet001 graffiti tags.
+
+- The Bitter Blonde buckle-belt sign (assets/bb_sign.js): original artwork supplied by Juani ("buckle belt vector.png"). Leather belt, neon lettering, saloon cladding, marquee bulbs and street-brawl choreography are original code art, no third-party assets.
+
+- World props (street lamps, neon blade signs, bins, hydrants, cones, bus shelter, barrel fires) and all crowd/street/fight sound are original procedural code (Web Audio synthesis), no third-party assets.

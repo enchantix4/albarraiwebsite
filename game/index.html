@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BUCK UP</title>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucidity Expand is loaded via @font-face (base64) in style.css so file:// works -->
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <!-- three.js r147 (free, MIT) — this revision still ships classic UMD examples (GLTFLoader, postprocessing) -->
+  <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/postprocessing/Pass.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/shaders/CopyShader.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/shaders/FilmShader.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/shaders/VignetteShader.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/postprocessing/MaskPass.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/postprocessing/FilmPass.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/libs/fflate.min.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/loaders/FBXLoader.js"></script>
+  <script src="https://unpkg.com/three@0.147.0/examples/js/utils/SkeletonUtils.js"></script>
+  <script src="models.js"></script>
+  <script src="assets/textures/leather_red_03_256.b64.js"></script>
+  <script src="ps2textures.js"></script>
+  <script src="assets/shaders/ps2Shader.js"></script>
+  <script src="assets/cc_models.js"></script>
+  <script src="assets/prop_models.js"></script>
+  <script src="assets/street_models.js"></script>
+  <script src="assets/kenney_chars.js"></script>
+  <script src="assets/ps2_chars.js"></script>
+  <script src="assets/urban_props.js"></script>
+  <script src="assets/sk_chars.js"></script>
+<script src="assets/ubc_chars.js"></script>
+  <script src="assets/pbr_pack.js"></script>
+  <script src="assets/street_pack.js"></script>
+  <script src="assets/bb_sign.js"></script>
+  <script src="assets/real_pack.js"></script>
+  <script src="assets/props_pack.js"></script>
+  <script src="assets/gta_street.js"></script>
+  <script src="scene3d.js"></script>
+  <script src="assets/itch_incoming/manifest.js"></script>
+  <script src="assets/itch_incoming/itch_models.js"></script>
+  <script src="assets/itchLoader.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BUCK UP</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucidity Expand is loaded via @font-face (base64) in style.css so file:// works -->
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="ldr" style="position:fixed;inset:0;z-index:99999;background:#120805;color:#ffcf5a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Lucidity Expand',Impact,sans-serif;text-align:center"><div style="font-size:9vmin;letter-spacing:.1em">BUCK UP</div><div style="margin-top:3vmin;font-size:3.4vmin;opacity:.85">SADDLING UP... FIRST LOAD CAN TAKE A MINUTE</div></div>
+  <!-- three.js r147 (free, MIT) — this revision still ships classic UMD examples (GLTFLoader, postprocessing) -->
+  <script src="mobile.js"></script>
+  <script src="three-r147-bundle.js"></script>
+  <script src="models.js"></script>
+  <script src="assets/textures/leather_red_03_256.b64.js"></script>
+  <script src="ps2textures.js"></script>
+  <script src="assets/shaders/ps2Shader.js"></script>
+  <script src="assets/cc_models.js"></script>
+  <script src="assets/prop_models.js"></script>
+  <script src="assets/street_models.js"></script>
+  <script src="assets/kenney_chars.js"></script>
+  <script src="assets/ps2_chars.js"></script>
+  <script src="assets/urban_props.js"></script>
+  <script src="assets/sk_chars.js"></script>
+<script src="assets/ubc_chars.js"></script>
+  <script src="assets/pbr_pack.js"></script>
+  <script src="assets/street_pack.js"></script>
+  <script src="assets/bb_sign.js"></script>
+  <script src="assets/real_pack.js"></script>
+  <script src="assets/props_pack.js"></script>
+  <script src="assets/gta_street.js"></script>
+  <script src="scene3d.js"></script>
+  <script src="assets/itch_incoming/manifest.js"></script>
+  <script src="assets/itch_incoming/itch_models.js"></script>
+  <script src="assets/itchLoader.js"></script>
+  <script>(function(){
+    function ok(){var m=window.__buckMobile;return !m||m.calib().mode==='play';}
+    function go(){var s=document.createElement('script');s.src='game.js';s.onload=function(){setTimeout(function(){var e=document.getElementById('ldr');if(e)e.remove();},400);};document.body.appendChild(s);}
+    (function w(){if(document.readyState==='complete'&&ok())go();else setTimeout(w,100);})();
+  })();</script>
+</body>
+</html>
