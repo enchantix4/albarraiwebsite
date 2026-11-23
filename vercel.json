@@ -1,134 +1,21 @@
 {
   "headers": [
     {
-      "source": "/game/models.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "gzip"
-        }
-      ]
-    },
-    {
-      "source": "/game/assets/itch_incoming/itch_models.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "gzip"
-        }
-      ]
-    },
-    {
-      "source": "/game/assets/pbr_pack.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "gzip"
-        }
-      ]
-    },
-    {
-      "source": "/game/assets/real_pack.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "br"
-        }
-      ]
-    },
-    {
       "source": "/game/:path*",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
     {
       "source": "/game/index.html",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=60, must-revalidate"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=60, must-revalidate" }
       ]
     },
     {
       "source": "/game",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=60, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/buck-up-phone/models.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "gzip"
-        }
-      ]
-    },
-    {
-      "source": "/buck-up-phone/assets/itch_incoming/itch_models.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "gzip"
-        }
-      ]
-    },
-    {
-      "source": "/buck-up-phone/assets/pbr_pack.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "gzip"
-        }
-      ]
-    },
-    {
-      "source": "/buck-up-phone/assets/real_pack.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "br"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=60, must-revalidate" }
       ]
     }
   ]
